@@ -1,6 +1,6 @@
 # WeirdUtils
 
-This package provides many pre-built DLLs for enhancing the vanilla WoW gameplay experience, aimed in particular at ease of use and accessibility but also bug fixes.
+This package provides many pre-built DLLs for enhancing the vanilla 1.12 client WoW gameplay experience, aimed in particular at ease of use and accessibility but also bug fixes.
 
 You may get all features by installing `weirdutils.dll`, or choose any selection of features via individual DLLs.  
 On Turtle WoW, place your chosen DLLs next to your `WoW.exe` and add them to your `dlls.txt`. For other versions you will need some sort of DLL loader.  
@@ -23,7 +23,7 @@ Enables loading loose game asset files (models, textures, etc.) from the `Data/`
 
 Also allows multi-character patch archive names (e.g. `patch-12.mpq`, `patch-jimbo.mpq`).
 
-Patch archives are sorted case-insensitively by filename — last in the sort gets highest priority, and all patches override the base archives.
+Patch archives are sorted case-insensitively by filename - last in the sort gets highest priority, and all patches override the base archives.
 
 No configuration needed, install and forget.
 
@@ -63,6 +63,24 @@ Fixes duplicate floating heal numbers caused by SuperWoW 1.5. Only relevant if y
 
 ---
 
+### Big Cursor
+
+Upscales the hardware cursor for improved visibility without losing sharpness. Supports fractional scales from 1.0 (off) to 4.0.
+
+- `/script SetCursorScale(1.2)` -- set cursor scale (default 1.2x)
+- `/script SetCursorScale(1)` -- disable (use original 32x32 cursor)
+
+This value is saved to the `cursorScale` CVar in tenths: `/script SetCVar("cursorScale", "15")` for 1.5x.
+
+Lua API for addon developers:
+
+- `SetCursorScale(n)` -- set scale factor (1.0–4.0), takes effect on next cursor change
+- `GetCursorScale()` -- returns current scale factor
+
+**DLL:** `bigcursor.dll`
+
+---
+
 ## Why No Source Code?
 
 This project is distributed as pre-built DLLs only. The source code is not and will not be made publicly available.
@@ -70,3 +88,60 @@ This project is distributed as pre-built DLLs only. The source code is not and w
 These DLLs work by hooking deeply into the game client's internals: memory layout, function addresses, rendering pipeline, input handling, and more.  
 While every feature here is built for legitimate quality-of-life use, the underlying techniques touch on too many core mechanisms that are trivially abusable.  
 Publishing the source would be handing a candy store to bad actors: the same hooks and patterns used to render a raid marker or fix a crash can be repurposed for cheats, exploits, and in particular automation with minimal effort.
+
+---
+
+## Developer Notes
+### Runtime Module Control API
+
+WeirdUtils exports three functions for querying and disabling modules at runtime in case other devs find their dll's in conflict.
+
+#### Exported Functions
+
+| Function | Signature | Description |
+|---|---|---|
+| `WeirdUtils_IsModuleActive` | `int __cdecl (const char *name)` | Returns 1 if the module is compiled in and currently hooked, 0 otherwise |
+| `WeirdUtils_DisableModule` | `int __cdecl (const char *name)` | Unhooks the named module. Returns 1 if found, 0 otherwise |
+| `WeirdUtils_DisableAll` | `int __cdecl (void)` | Unhooks all modules and core hooks. Returns count of modules disabled |
+
+Module names are case-insensitive and match the build option names:
+
+`customassets`, `logsessions`, `transmogfix`, `healtextfix`, `bigcursor`
+
+There is no re-enable API - re-hooking after unhook is unsafe.
+
+#### C/C++ Header
+
+A header-only `include/weirdutils_api.h` is provided that handles DLL discovery and runtime resolution automatically. No .lib file needed:
+
+```c
+#include "weirdutils_api.h"
+
+// Returns 0 if WeirdUtils isn't loaded - safe to call unconditionally
+if (WeirdUtils_IsModuleActive("transmogfix"))
+    WeirdUtils_DisableModule("transmogfix");
+```
+
+The header tries all known DLL names (`weirdutils.dll`, `transmogfix.dll`, etc.) via `GetModuleHandleA`, so it works regardless of which DLL variant is loaded.
+
+#### Raw GetProcAddress
+
+If you prefer not to use the header:
+
+```c
+HMODULE hMod = GetModuleHandleA("weirdutils.dll");
+if (hMod) {
+    typedef int (__cdecl *IsActiveFn)(const char *);
+    IsActiveFn isActive = (IsActiveFn)GetProcAddress(hMod, "WeirdUtils_IsModuleActive");
+    if (isActive && isActive("transmogfix")) {
+        typedef int (__cdecl *DisableFn)(const char *);
+        DisableFn disable = (DisableFn)GetProcAddress(hMod, "WeirdUtils_DisableModule");
+        if (disable) disable("transmogfix");
+    }
+}
+
+### Module Mutexes
+
+Each module also holds a named mutex while active: `Local\WeirdUtils_<name>_<PID>` (e.g. `Local\WeirdUtils_bigcursor_12345`). The exception is transmogfix, which uses `Local\TransmogCoalesceHook_<PID>` for legacy reasons.
+
+If you see the mutex, the module is loaded - and can use the Runtime Module Control API to disable it. If you don't see it, the module isn't active and you're free to hook those functions yourself.
