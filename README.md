@@ -2,12 +2,25 @@
 
 This package provides many pre-built DLLs for enhancing the vanilla 1.12 client WoW gameplay experience, aimed in particular at ease of use and accessibility but also bug fixes.
 
-You may get all features by installing `weirdutils.dll`, or choose any selection of features via individual DLLs.  
-On Turtle WoW, place your chosen DLLs next to your `WoW.exe` and add them to your `dlls.txt`. For other versions you will need some sort of DLL loader.  
+You may get all features by installing `weirdutils.dll`, or choose any selection of features via individual DLLs.
+On Turtle WoW, place your chosen DLLs next to your `WoW.exe` and add them to your `dlls.txt`. For other versions you will need some sort of DLL loader.
 
 ---
 
 ## Features
+
+### PNG Screenshots
+
+Saves screenshots as compressed PNG files instead of the default uncompressed TGA format. Runs on a background thread with no frame drops.
+
+Controlled via the `screenshotQuality` CVar (saved to config.wtf):
+
+- `/script SetCVar("screenshotQuality", "6")` -- set compression level (1 = fast, 9 = smallest, default 6)
+- `/script SetCVar("screenshotQuality", "0")` -- disable PNG, use original TGA format
+
+**DLL:** `pngscreenshot.dll`
+
+---
 
 ### Transmog Fix
 
@@ -28,6 +41,23 @@ Patch archives are sorted case-insensitively by filename - last in the sort gets
 No configuration needed, install and forget.
 
 **DLL:** `customassets.dll`
+
+---
+
+### Utility Minimap Trackings
+
+Adds custom minimap icons for NPC types (vendors, trainers, innkeepers, etc.) and game objects (mailboxes).  
+Replaces the native tracking dropdown with a combined menu showing both spell tracking and NPC category tracking.  
+Can be disabled easily from normal AddOn menu.  
+
+- Click the minimap tracking icon to open the dropdown
+- Check/uncheck NPC categories to toggle their minimap icons
+- Spell tracking (Hunter tracking, Find Herbs, etc.) remains available alongside NPC tracking
+
+Supports many NPC types such as Auctioneer, Banker, Flightmaster, Repair, Reagents, Poisons, and more  
+Supported game objects: Mailbox, Brainwasher  
+
+**DLL:** `minimapicons.dll`
 
 ---
 
@@ -74,7 +104,7 @@ This value is saved to the `cursorScale` CVar in tenths: `/script SetCVar("curso
 
 Lua API for addon developers:
 
-- `SetCursorScale(n)` -- set scale factor (1.0–4.0), takes effect on next cursor change
+- `SetCursorScale(n)` -- set scale factor (1.0-4.0), takes effect on next cursor change
 - `GetCursorScale()` -- returns current scale factor
 
 **DLL:** `bigcursor.dll`
@@ -106,7 +136,9 @@ WeirdUtils exports three functions for querying and disabling modules at runtime
 
 Module names are case-insensitive and match the build option names:
 
-`customassets`, `logsessions`, `transmogfix`, `healtextfix`, `bigcursor`
+`customassets`, `logsessions`, `transmogfix`, `minimapicons`, `healtextfix`, `bigcursor`, `pngscreenshot`
+
+The `weirdutils_api.h` header is included with each release.
 
 There is no re-enable API - re-hooking after unhook is unsafe.
 
@@ -122,7 +154,7 @@ if (WeirdUtils_IsModuleActive("transmogfix"))
     WeirdUtils_DisableModule("transmogfix");
 ```
 
-The header tries all known DLL names (`weirdutils.dll`, `transmogfix.dll`, etc.) via `GetModuleHandleA`, so it works regardless of which DLL variant is loaded.
+The header tries all known DLL names (`weirdutils.dll`, `pngscreenshot.dll`, etc.) via `GetModuleHandleA`, so it works regardless of which DLL variant is loaded.
 
 #### Raw GetProcAddress
 
@@ -139,9 +171,10 @@ if (hMod) {
         if (disable) disable("transmogfix");
     }
 }
+```
 
 ### Module Mutexes
 
-Each module also holds a named mutex while active: `Local\WeirdUtils_<name>_<PID>` (e.g. `Local\WeirdUtils_bigcursor_12345`). The exception is transmogfix, which uses `Local\TransmogCoalesceHook_<PID>` for legacy reasons.
+Each module also holds a named mutex while active: `Local\WeirdUtils_<name>_<PID>` (e.g. `Local\WeirdUtils_transmogfix_12345`). The exception is transmogfix, which uses `Local\TransmogCoalesceHook_<PID>` for legacy reasons.
 
 If you see the mutex, the module is loaded - and can use the Runtime Module Control API to disable it. If you don't see it, the module isn't active and you're free to hook those functions yourself.
