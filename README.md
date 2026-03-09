@@ -18,7 +18,7 @@ Controlled via the `screenshotQuality` CVar (saved to config.wtf):
 - `/script SetCVar("screenshotQuality", "6")` -- set compression level (1 = fast, 9 = smallest, default 6)
 - `/script SetCVar("screenshotQuality", "0")` -- disable PNG, use original TGA format
 
-**DLL:** `pngscreenshot.dll`
+**DLL:** `pngscreenshots.dll`
 
 ---
 
@@ -136,7 +136,7 @@ WeirdUtils exports three functions for querying and disabling modules at runtime
 
 Module names are case-insensitive and match the build option names:
 
-`customassets`, `logsessions`, `transmogfix`, `minimapicons`, `healtextfix`, `bigcursor`, `pngscreenshot`
+`customassets`, `logsessions`, `transmogfix`, `minimapicons`, `healtextfix`, `bigcursor`, `pngscreenshots`
 
 The `weirdutils_api.h` header is included with each release.
 
@@ -154,7 +154,7 @@ if (WeirdUtils_IsModuleActive("transmogfix"))
     WeirdUtils_DisableModule("transmogfix");
 ```
 
-The header tries all known DLL names (`weirdutils.dll`, `pngscreenshot.dll`, etc.) via `GetModuleHandleA`, so it works regardless of which DLL variant is loaded.
+The header tries all known DLL names (`weirdutils.dll`, `pngscreenshots.dll`, etc.) via `GetModuleHandleA`, so it works regardless of which DLL variant is loaded.
 
 #### Raw GetProcAddress
 
