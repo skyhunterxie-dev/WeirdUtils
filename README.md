@@ -2,8 +2,8 @@
 
 This package provides many pre-built DLLs for enhancing the vanilla 1.12 client WoW gameplay experience, aimed in particular at ease of use and accessibility but also bug fixes.
 
-You may get all features by installing `weirdutils.dll`, or choose any selection of features via individual DLLs.
-On Turtle WoW, place your chosen DLLs next to your `WoW.exe` and add them to your `dlls.txt`. For other versions you will need some sort of DLL loader.
+You may get all features by installing `weirdutils.dll`, or choose any selection of features via individual DLLs.  
+On Turtle WoW, place your chosen DLLs next to your `WoW.exe` and add them to your `dlls.txt`. For other versions you will need some sort of DLL loader.  
 
 ---
 
@@ -46,7 +46,7 @@ No configuration needed, install and forget.
 
 ### Utility Minimap Trackings
 
-Adds custom minimap icons for NPC types (vendors, trainers, innkeepers, etc.) and game objects (mailboxes).  
+Adds TBC-style minimap tracking icons for NPC types (vendors, trainers, innkeepers, etc.) and game objects (mailboxes).  
 Replaces the native tracking dropdown with a combined menu showing both spell tracking and NPC category tracking.  
 Can be disabled easily from normal AddOn menu.  
 
@@ -58,6 +58,20 @@ Supports many NPC types such as Auctioneer, Banker, Flightmaster, Repair, Reagen
 Supported game objects: Mailbox, Brainwasher  
 
 **DLL:** `minimapicons.dll`
+
+---
+
+### Clickthrough
+
+Makes interactable Objects and NPCs clickable through players and units.
+
+- Players blocking interactable NPCs (vendors, trainers, flight masters, bankers, etc.) or Objects (mailboxes, summoning portals, soulwells) become transparent to clicks
+- Units (pets, NPCs) blocking interactable Objects become transparent to clicks
+- Non-interactable objects (other players' pets, random mobs) are not affected, this solely helps with player dogpiles
+
+No configuration needed, install and forget.
+
+**DLL:** `clickthrough.dll`
 
 ---
 
@@ -104,7 +118,7 @@ This value is saved to the `cursorScale` CVar in tenths: `/script SetCVar("curso
 
 Lua API for addon developers:
 
-- `SetCursorScale(n)` -- set scale factor (1.0-4.0), takes effect on next cursor change
+- `SetCursorScale(n)` -- set scale factor (1.0–4.0), takes effect on next cursor change
 - `GetCursorScale()` -- returns current scale factor
 
 **DLL:** `bigcursor.dll`
@@ -134,13 +148,11 @@ WeirdUtils exports three functions for querying and disabling modules at runtime
 | `WeirdUtils_DisableModule` | `int __cdecl (const char *name)` | Unhooks the named module. Returns 1 if found, 0 otherwise |
 | `WeirdUtils_DisableAll` | `int __cdecl (void)` | Unhooks all modules and core hooks. Returns count of modules disabled |
 
-Module names are case-insensitive and match the build option names:
+Module names are case-insensitive and match the released dll names:
 
-`customassets`, `logsessions`, `transmogfix`, `minimapicons`, `healtextfix`, `bigcursor`, `pngscreenshots`
+`customassets`, `logsessions`, `transmogfix`, `minimapicons`, `healtextfix`, `bigcursor`, `pngscreenshots`, `clickthrough`
 
-The `weirdutils_api.h` header is included with each release.
-
-There is no re-enable API - re-hooking after unhook is unsafe.
+There is no re-enable API.
 
 #### C/C++ Header
 
@@ -154,7 +166,7 @@ if (WeirdUtils_IsModuleActive("transmogfix"))
     WeirdUtils_DisableModule("transmogfix");
 ```
 
-The header tries all known DLL names (`weirdutils.dll`, `pngscreenshots.dll`, etc.) via `GetModuleHandleA`, so it works regardless of which DLL variant is loaded.
+The header tries all known DLL names (`weirdutils.dll`, `worldmarkers.dll`, etc.) via `GetModuleHandleA`, so it works regardless of which DLL variant is loaded.
 
 #### Raw GetProcAddress
 
@@ -175,6 +187,6 @@ if (hMod) {
 
 ### Module Mutexes
 
-Each module also holds a named mutex while active: `Local\WeirdUtils_<name>_<PID>` (e.g. `Local\WeirdUtils_transmogfix_12345`). The exception is transmogfix, which uses `Local\TransmogCoalesceHook_<PID>` for legacy reasons.
+Each module also holds a named mutex while active: `Local\WeirdUtils_<name>_<PID>` (e.g. `Local\WeirdUtils_framecrash_12345`). The exception is transmogfix, which uses `Local\TransmogCoalesceHook_<PID>` for legacy reasons.
 
 If you see the mutex, the module is loaded - and can use the Runtime Module Control API to disable it. If you don't see it, the module isn't active and you're free to hook those functions yourself.
