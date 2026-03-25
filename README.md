@@ -46,16 +46,16 @@ No configuration needed, install and forget.
 
 ### Utility Minimap Trackings
 
-Adds TBC-style minimap tracking icons for NPC types (vendors, trainers, innkeepers, etc.) and game objects (mailboxes).  
-Replaces the native tracking dropdown with a combined menu showing both spell tracking and NPC category tracking.  
-Can be disabled easily from normal AddOn menu.  
+Adds TBC/WotLK-style minimap tracking icons for NPC types, game objects, and quest givers.
+Replaces the native tracking dropdown with a combined menu showing both spell tracking and NPC category tracking.
+Can be disabled from the normal AddOn menu. Preferences saved per-character.
 
 - Click the minimap tracking icon to open the dropdown
 - Check/uncheck NPC categories to toggle their minimap icons
 - Spell tracking (Hunter tracking, Find Herbs, etc.) remains available alongside NPC tracking
+- "Hide in Cities" toggle suppresses NPC icons in capital cities
 
-Supports many NPC types such as Auctioneer, Banker, Flightmaster, Repair, Reagents, Poisons, and more  
-Supported game objects: Mailbox, Brainwasher  
+Tracks various npc types and useful objects like Oranges and Brainwasher and Mailbox.
 
 **DLL:** `minimapicons.dll`
 
@@ -63,11 +63,12 @@ Supported game objects: Mailbox, Brainwasher
 
 ### Clickthrough
 
-Makes interactable Objects and NPCs clickable through players and units.
+Makes interactable objects and NPCs clickable through players and units that are blocking them. When you click a player or unit that's standing on top of a vendor, mailbox, or other interactable target, the click passes through to the target behind them.
 
-- Players blocking interactable NPCs (vendors, trainers, flight masters, bankers, etc.) or Objects (mailboxes, summoning portals, soulwells) become transparent to clicks
-- Units (pets, NPCs) blocking interactable Objects become transparent to clicks
-- PvP objects and Non-interactable objects (other players' pets, random mobs) are not affected, this solely helps with player dogpiles
+- Players blocking interactable NPCs (vendors, trainers, flight masters, bankers, quest givers, etc.) or game objects become transparent to clicks
+- Players blocking lootable corpses become transparent to clicks
+- Units (pets, NPCs) blocking interactable game objects become transparent to clicks
+- Disabled inside battlegrounds to prevent targeting objectives through enemy players
 
 No configuration needed, install and forget.
 
@@ -125,6 +126,21 @@ Lua API for addon developers:
 
 ---
 
+### Performance
+
+Engine-level optimizations that reduce CPU time on math, rendering helpers, file lookups, and data decompression. No visual difference, no configuration needed. Included in `weirdutils.dll`.
+
+- **SIMD Math** - replaces 20+ internal math functions with SSE/AVX equivalents covering skeletal animation, particle rendering, frustum culling, collision detection, text glyph caching, and float-to-integer conversion
+- **Data Decompression** - swaps the game's 2004-era zlib with a modern library (2.2x faster). Loading screen times reduced by at least 13%
+- **MPQ File Cache** - caches archive file lookups so repeat file opens skip the archive chain walk. Saving 50-160ms every 15 seconds during heavy gameplay
+- **Timer Calibration** - recalibrates the OS performance counter for accurate animation timing. Ported from [VanillaFixes](https://github.com/hannesmann/vanillafixes)
+
+Most noticeable in cities, raids, and during zone transitions.
+
+**DLL:** `weirdperformance.dll`
+
+---
+
 ## Why No Source Code?
 
 This project is distributed as pre-built DLLs only. The source code is not and will not be made publicly available.
@@ -146,11 +162,11 @@ WeirdUtils exports three functions for querying and disabling modules at runtime
 |---|---|---|
 | `WeirdUtils_IsModuleActive` | `int __cdecl (const char *name)` | Returns 1 if the module is compiled in and currently hooked, 0 otherwise |
 | `WeirdUtils_DisableModule` | `int __cdecl (const char *name)` | Unhooks the named module. Returns 1 if found, 0 otherwise |
-| `WeirdUtils_DisableAll` | `int __cdecl (void)` | Unhooks all modules and core hooks. Returns count of modules disabled |
+| `WeirdUtils_DisableAll` | `int __cdecl (void)` | Unhooks all modules. Returns count of modules disabled |
 
 Module names are case-insensitive and match the released dll names:
 
-`customassets`, `logsessions`, `transmogfix`, `minimapicons`, `healtextfix`, `bigcursor`, `pngscreenshots`, `clickthrough`
+`customassets`, `logsessions`, `transmogfix`, `minimapicons`, `healtextfix`, `bigcursor`, `pngscreenshots`, `clickthrough`, `weirdperformance`
 
 There is no re-enable API.
 
@@ -166,7 +182,7 @@ if (WeirdUtils_IsModuleActive("transmogfix"))
     WeirdUtils_DisableModule("transmogfix");
 ```
 
-The header tries all known DLL names (`weirdutils.dll`, `worldmarkers.dll`, etc.) via `GetModuleHandleA`, so it works regardless of which DLL variant is loaded.
+The header tries all known DLL names (`weirdutils.dll`, `minimapicons.dll`, etc.) via `GetModuleHandleA`, so it works regardless of which DLL variant is loaded.
 
 #### Raw GetProcAddress
 
@@ -185,8 +201,39 @@ if (hMod) {
 }
 ```
 
+### Version Query API
+
+WeirdUtils registers a Lua global table and query function for addon developers to detect which modules are loaded and their versions. Available from the login screen onward.
+
+#### `GetWeirdUtilsVersion()`
+
+Returns the `WeirdUtils` table containing all enabled modules and their version strings:
+
+```lua
+local modules = GetWeirdUtilsVersion()
+for name, version in pairs(modules) do
+    print(name .. " v" .. version)
+end
+```
+
+#### `GetWeirdUtilsVersion("modulename")`
+
+Returns the version string for a specific module, or `nil` if not loaded:
+
+```lua
+if GetWeirdUtilsVersion("minimapicons") then
+    -- Minimap Icons is available
+end
+
+local ver = GetWeirdUtilsVersion("weirdperformance")  -- "1.0" or nil
+```
+
+The `WeirdUtils` table is additive - if multiple independent DLLs are loaded (e.g. `minimapicons.dll` and `clickthrough.dll` separately), each adds its own modules to the shared table.
+
+---
+
 ### Module Mutexes
 
-Each module also holds a named mutex while active: `Local\WeirdUtils_<name>_<PID>` (e.g. `Local\WeirdUtils_framecrash_12345`). The exception is transmogfix, which uses `Local\TransmogCoalesceHook_<PID>` for legacy reasons.
+Each module also holds a named mutex while active: `Local\WeirdUtils_<name>_<PID>` (e.g. `Local\WeirdUtils_transmogfix_12345`). The exception is transmogfix, which uses `Local\TransmogCoalesceHook_<PID>` for legacy reasons.
 
 If you see the mutex, the module is loaded - and can use the Runtime Module Control API to disable it. If you don't see it, the module isn't active and you're free to hook those functions yourself.
