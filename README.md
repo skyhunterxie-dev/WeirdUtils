@@ -63,12 +63,13 @@ Tracks various npc types and useful objects like Oranges and Brainwasher and Mai
 
 ### Clickthrough
 
-Makes interactable objects and NPCs clickable through players and units that are blocking them. When you click a player or unit that's standing on top of a vendor, mailbox, or other interactable target, the click passes through to the target behind them.
+Smart cursor targeting that prioritizes useful interactions. Instead of always selecting the nearest object under the cursor, the module finds the most useful target along the ray in priority order.
 
-- Players blocking interactable NPCs (vendors, trainers, flight masters, bankers, quest givers, etc.) or game objects become transparent to clicks
-- Players blocking lootable corpses become transparent to clicks
-- Units (pets, NPCs) blocking interactable game objects become transparent to clicks
+- Lootable corpses first, then interactable game objects/portals, then interactable NPCs, then normal selection
+- Dead non-lootable corpses can still be selected when nothing more useful is behind them
 - Disabled inside battlegrounds to prevent targeting objectives through enemy players
+
+Can replaces SuperWoW's `Clickthrough()` toggle with always-on smart targeting that doesn't require a manual toggle and preserves the ability to select dead bodies when needed. Disable corpse-clickthrough in SuperAPI if you want this.
 
 No configuration needed, install and forget.
 
