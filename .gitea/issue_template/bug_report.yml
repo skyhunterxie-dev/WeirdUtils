@@ -38,10 +38,6 @@ body:
     attributes:
       label: Other DLLs loaded
       description: List any other DLLs in your dlls.txt (nampower, SuperWoW, UnitXP, etc.)
-      placeholder: |
-        nampower.dll
-        SuperWoWhook.dll
-        UnitXP_SP3.dll
   - type: textarea
     id: description
     attributes:
@@ -57,9 +53,9 @@ body:
     id: crash-log
     attributes:
       label: Crash log
-      description: Attach the crash .txt file from your Errors/ folder. Drag and drop or use the attachment button below the text box.
+      description: Attach the crash .txt file from your Errors/ folder.
   - type: textarea
     id: dll-upload
     attributes:
       label: DLL files
-      description: Attach the DLL(s) you are using. Drag and drop or use the attachment button below the text box.
+      description: Attach the DLL(s) you are using.
