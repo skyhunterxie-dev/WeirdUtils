@@ -59,9 +59,14 @@ body:
         2. Open mailbox
         3. Game crashes
   - type: textarea
-    id: attachments
+    id: crash-log
     attributes:
-      label: Crash log and DLLs
-      description: |
-        Attach your crash log (.txt file from the Errors/ folder) and the DLL(s) causing the issue.
-        Drag and drop files here or click to browse.
+      label: Crash log
+      description: Drag and drop the crash .txt file from your Errors/ folder here.
+      placeholder: "Drag and drop crash file here"
+  - type: textarea
+    id: dll-upload
+    attributes:
+      label: DLL files
+      description: Drag and drop the DLL(s) causing the issue here.
+      placeholder: "Drag and drop DLL file(s) here"
