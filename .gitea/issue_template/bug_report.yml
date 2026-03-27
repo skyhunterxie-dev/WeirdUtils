@@ -25,19 +25,20 @@ body:
       default: 0
     validations:
       required: true
-  - type: input
+  - type: textarea
     id: dlls
     attributes:
       label: WeirdUtils DLLs in use
-      description: Which WeirdUtils DLL(s) are you using?
-      placeholder: "e.g. weirdutils.dll, or minimapicons.dll + clickthrough.dll"
+      description: Drag and drop your WeirdUtils DLL file(s) into this box.
+      placeholder: "Drag and drop .dll files here"
     validations:
       required: true
-  - type: textarea
+  - type: input
     id: other-dlls
     attributes:
       label: Other DLLs loaded
       description: List any other DLLs in your dlls.txt (nampower, SuperWoW, UnitXP, etc.)
+      placeholder: "e.g. nampower.dll, UnitXP.dll"
   - type: textarea
     id: description
     attributes:
@@ -53,9 +54,11 @@ body:
     id: crash-log
     attributes:
       label: Crash log
-      description: Attach the crash .txt file from your Errors/ folder.
+      description: Drag and drop the crash .txt file from your Data/ folder into this box.
+      placeholder: "Drag and drop crash .txt file here"
   - type: textarea
     id: dll-upload
     attributes:
       label: DLL files
-      description: Attach the DLL(s) you are using.
+      description: Drag and drop the WeirdUtils DLL(s) you are using into this box.
+      placeholder: "Drag and drop .dll files here"
