@@ -26,37 +26,19 @@ body:
     validations:
       required: true
   - type: textarea
-    id: dlls
-    attributes:
-      label: WeirdUtils DLLs in use
-      description: Drag and drop your WeirdUtils DLL file(s) into this box.
-      placeholder: "Drag and drop .dll files here"
-    validations:
-      required: true
-  - type: input
-    id: other-dlls
-    attributes:
-      label: Other DLLs loaded
-      description: List any other DLLs in your dlls.txt (nampower, SuperWoW, UnitXP, etc.)
-      placeholder: "e.g. nampower.dll, UnitXP.dll"
-  - type: textarea
     id: description
     attributes:
-      label: What happened?
+      label: Bug Report
+      description: Attach your WeirdUtils DLL(s) and crash log (.txt from Data/ folder) by dragging them into this box.
       value: |
-        Description:
-        What went wrong? Include any error messages you saw.
+        What happened?
 
 
         Steps to reproduce:
         1.
         2.
         3.
+
+        Other DLLs loaded (nampower, SuperWoW, UnitXP, etc.):
     validations:
       required: true
-  - type: textarea
-    id: crash-log
-    attributes:
-      label: Crash log
-      description: Drag and drop the crash .txt file from your Data/ folder into this box.
-      placeholder: "Drag and drop crash .txt file here"
