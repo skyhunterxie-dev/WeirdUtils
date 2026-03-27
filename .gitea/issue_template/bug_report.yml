@@ -56,9 +56,3 @@ body:
       label: Crash log
       description: Drag and drop the crash .txt file from your Data/ folder into this box.
       placeholder: "Drag and drop crash .txt file here"
-  - type: textarea
-    id: dll-upload
-    attributes:
-      label: DLL files
-      description: Drag and drop the WeirdUtils DLL(s) you are using into this box.
-      placeholder: "Drag and drop .dll files here"
