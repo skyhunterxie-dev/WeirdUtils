@@ -47,26 +47,19 @@ body:
     attributes:
       label: What happened?
       description: Describe the issue. Include any error messages or crash details.
-      placeholder: "Game crashes on logout with ERROR #132..."
     validations:
       required: true
   - type: textarea
     id: steps
     attributes:
       label: Steps to reproduce
-      placeholder: |
-        1. Log in to character
-        2. Open mailbox
-        3. Game crashes
   - type: textarea
     id: crash-log
     attributes:
       label: Crash log
-      description: Drag and drop the crash .txt file from your Errors/ folder here.
-      placeholder: "Drag and drop crash file here"
+      description: Attach the crash .txt file from your Errors/ folder. Drag and drop or use the attachment button below the text box.
   - type: textarea
     id: dll-upload
     attributes:
       label: DLL files
-      description: Drag and drop the DLL(s) causing the issue here.
-      placeholder: "Drag and drop DLL file(s) here"
+      description: Attach the DLL(s) you are using. Drag and drop or use the attachment button below the text box.
