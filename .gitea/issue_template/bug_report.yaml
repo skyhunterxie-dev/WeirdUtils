@@ -1,0 +1,64 @@
+name: Bug Report
+about: Report a crash, error, or unexpected behavior
+labels:
+  - bug
+body:
+  - type: dropdown
+    id: launcher
+    attributes:
+      label: Launcher
+      options:
+        - VanillaFixes.exe
+        - WoW.exe (direct)
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - Windows
+        - Linux (Wine)
+        - macOS (Wine/CrossOver)
+    validations:
+      required: true
+  - type: input
+    id: dlls
+    attributes:
+      label: DLLs in use
+      description: Which WeirdUtils DLL(s) are you using?
+      placeholder: "e.g. weirdutils.dll, or minimapicons.dll + clickthrough.dll"
+    validations:
+      required: true
+  - type: textarea
+    id: other-dlls
+    attributes:
+      label: Other DLLs loaded
+      description: List any other DLLs in your dlls.txt (nampower, SuperWoW, UnitXP, etc.)
+      placeholder: |
+        nampower.dll
+        SuperWoWhook.dll
+        UnitXP_SP3.dll
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the issue. Include any error messages or crash details.
+      placeholder: "Game crashes on logout with ERROR #132..."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Log in to character
+        2. Open mailbox
+        3. Game crashes
+  - type: textarea
+    id: crash-log
+    attributes:
+      label: Crash log
+      description: If you have a crash log from the Errors/ folder, paste it here.
+      render: text
