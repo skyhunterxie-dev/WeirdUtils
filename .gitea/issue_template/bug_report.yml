@@ -43,12 +43,13 @@ body:
     id: description
     attributes:
       label: What happened?
+      render: text
       value: |
-        ## Description
+        Description:
         What went wrong? Include any error messages you saw.
 
 
-        ## Steps to reproduce
+        Steps to reproduce:
         1.
         2.
         3.
