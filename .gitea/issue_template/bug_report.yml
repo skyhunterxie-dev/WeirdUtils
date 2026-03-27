@@ -43,7 +43,6 @@ body:
     id: description
     attributes:
       label: What happened?
-      render: text
       value: |
         Description:
         What went wrong? Include any error messages you saw.
