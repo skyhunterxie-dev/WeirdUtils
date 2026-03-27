@@ -31,14 +31,11 @@ body:
       label: Bug Report
       description: Attach your WeirdUtils DLL(s) and crash log (.txt from Data/ folder) by dragging them into this box.
       value: |
-        What happened?
+        ## What happened?
 
+        ## Steps to reproduce:
 
-        Steps to reproduce:
-        1.
-        2.
-        3.
+        ## Other DLLs loaded (nampower, SuperWoW, UnitXP, etc.):
 
-        Other DLLs loaded (nampower, SuperWoW, UnitXP, etc.):
     validations:
       required: true
