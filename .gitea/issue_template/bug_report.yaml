@@ -28,7 +28,7 @@ body:
   - type: input
     id: dlls
     attributes:
-      label: DLLs in use
+      label: WeirdUtils DLLs in use
       description: Which WeirdUtils DLL(s) are you using?
       placeholder: "e.g. weirdutils.dll, or minimapicons.dll + clickthrough.dll"
     validations:
@@ -59,8 +59,9 @@ body:
         2. Open mailbox
         3. Game crashes
   - type: textarea
-    id: crash-log
+    id: attachments
     attributes:
-      label: Crash log
-      description: Paste crash text here or attach the file from the Errors/ folder.
-      render: text
+      label: Crash log and DLLs
+      description: |
+        Attach your crash log (.txt file from the Errors/ folder) and the DLL(s) causing the issue.
+        Drag and drop files here or click to browse.
