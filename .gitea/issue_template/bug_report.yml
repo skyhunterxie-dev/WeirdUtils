@@ -29,7 +29,7 @@ body:
     id: description
     attributes:
       label: Bug Report
-      description: Attach your WeirdUtils DLL(s) and crash log (.txt from Data/ folder) by dragging them into this box.
+      description: Attach your WeirdUtils DLL(s) and crash log (.txt from Errors/ folder) by dragging them into this box.
       value: |
         ## What happened?
 
